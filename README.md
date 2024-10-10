@@ -1,12 +1,22 @@
+# What I have learned
+1. achieve an Aridrop
+2. siganature and transaction types
+3. Principles of cryptography like elliptic curve, hash
+4. make a blob transaction.
+
+
+
+
 # Merkle Airdrop Extravaganza 
 
 This is a section of the [Cyfrin Updraft Advanced Foundry Course](https://updraft.cyfrin.io/). In this repo, we will learn about signatures, merkle drops, and more. 
 
+- [What I have learned](#what-i-have-learned)
 - [Merkle Airdrop Extravaganza](#merkle-airdrop-extravaganza)
 - [Getting Started](#getting-started)
   - [Requirements](#requirements)
   - [Quickstart](#quickstart)
-- [Usage](#usage)
+- [Usage1. A transaction is submitted with a blob and cryptographic proof data](#usage1-a-transaction-is-submitted-with-a-blob-and-cryptographic-proof-data)
   - [Pre-deploy: Generate merkle proofs](#pre-deploy-generate-merkle-proofs)
 - [Deploy](#deploy)
   - [Deploy to Anvil](#deploy-to-anvil)
@@ -48,7 +58,10 @@ cd merkle-airdrop
 make # or forge install && forge build if you don't have make 
 ```
 
-# Usage
+# Usage1. A transaction is submitted with a blob and cryptographic proof data
+   2. The contract on-chain does not directly access the blob. Instead, it uses the `BLOBHASH` opcode to generate a hash of the blob
+   3. The _blob hash_ and the _proof data_, is passed to the **point evaluation opcode** to verify the transaction batch
+
 
 ## Pre-deploy: Generate merkle proofs
 

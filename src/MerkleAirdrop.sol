@@ -7,6 +7,7 @@ import { EIP712 } from "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
 import { SignatureChecker } from "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
 import { ECDSA } from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import { MessageHashUtils } from "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
+import { console } from "forge-std/console.sol";
 
 /**
  * @title Merkle Airdrop - Airdrop tokens to users who can prove they are in a merkle tree
@@ -56,11 +57,13 @@ contract MerkleAirdrop is EIP712 {
     )
         external
     {
+        // prevent from multiple claiming
+        console.log("start claiming");
         if (s_hasClaimed[account]) {
             revert MerkleAirdrop__AlreadyClaimed();
         }
 
-        // Verify the signature
+        // Verify if the signature is signed by expected account
         if (!_isValidSignature(account, getMessageHash(account, amount), v, r, s)) {
             revert MerkleAirdrop__InvalidSignature();
         }
@@ -102,6 +105,7 @@ contract MerkleAirdrop is EIP712 {
     //////////////////////////////////////////////////////////////*/
 
     // verify whether the recovered signer is the expected signer/the account to airdrop tokens for
+    // uint8 _v, bytes32 _r, bytes32 _s: 签名的三个部分。_v 是恢复标识符，_r 和 _s 是签名的两个哈希值。这三个部分一起构成了一个 ECDSA 签名。
     function _isValidSignature(
         address signer,
         bytes32 digest,

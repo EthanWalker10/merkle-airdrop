@@ -1,12 +1,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import {MerkleAirdrop} from "../../src/MerkleAirdrop.sol";
-import {BagelToken} from "../../src/BagelToken.sol";
-import {Test} from "forge-std/Test.sol";
-import {console} from "forge-std/console.sol";
-import {DeployMerkleAirdrop} from "../../script/DeployMerkleAirdrop.s.sol";
-import {ZkSyncChainChecker} from "foundry-devops/src/ZkSyncChainChecker.sol";
+import { MerkleAirdrop } from "../../src/MerkleAirdrop.sol";
+import { BagelToken } from "../../src/BagelToken.sol";
+import { Test } from "forge-std/Test.sol";
+import { console } from "forge-std/console.sol";
+import { DeployMerkleAirdrop } from "../../script/DeployMerkleAirdrop.s.sol";
+import { ZkSyncChainChecker } from "foundry-devops/src/ZkSyncChainChecker.sol";
+
+// Log the user address and copy it to the array of addresses in the `GenerateInput` file.
+// This step ensures the user address is actually included in the Merkle Tree, allowing them to rightfully claim tokens.
 
 contract MerkleAirdropTest is ZkSyncChainChecker, Test {
     MerkleAirdrop airdrop;
@@ -19,7 +22,9 @@ contract MerkleAirdropTest is ZkSyncChainChecker, Test {
     uint256 amountToCollect = (25 * 1e18); // 25.000000
     uint256 amountToSend = amountToCollect * 4;
 
+    // leaf 1 in level 0
     bytes32 proofOne = 0x0fd7c981d39bece61f7499702bf59b3114a90e66b51ba2c53abdf7b62986c00a;
+    // leaf 0 in lavel 1(which have no inborn leaves)
     bytes32 proofTwo = 0xe5ebd1e1b5a5478a944ecab36a9a954ac3b6b8216875f6524caa7a1d87096576;
     bytes32[] proof = [proofOne, proofTwo];
 
@@ -37,6 +42,7 @@ contract MerkleAirdropTest is ZkSyncChainChecker, Test {
         (user, userPrivKey) = makeAddrAndKey("user");
     }
 
+    // whatever sign or verify, hash is the first
     function signMessage(uint256 privKey, address account) public view returns (uint8 v, bytes32 r, bytes32 s) {
         bytes32 hashedMessage = airdrop.getMessageHash(account, amountToCollect);
         (v, r, s) = vm.sign(privKey, hashedMessage);
